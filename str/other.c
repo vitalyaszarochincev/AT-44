@@ -49,6 +49,21 @@ void checkParam(int num)
 {
     if(num != REQUIRED_NUM_OF_PARAMETERS)
     {
-        _exit(INCORRECT_PARAMETERS);
+        __exit(INCORRECT_PARAMETERS);
+    }
+}
+
+void destroyTable(STRING** table)
+{
+    destroyFields(table);
+    free(table);
+}
+
+void destroyFields(STRING** table)
+{
+    while(*table)
+    {
+        free(*table);
+        table++;
     }
 }

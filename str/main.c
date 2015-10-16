@@ -13,6 +13,8 @@ int main(int argc, char* argv[])
     table = readFile(file);
     max = findMax(table);
     printMax(file, table, max);
+    destroyTable(table);
+
     return 0;
 }
 
@@ -48,6 +50,8 @@ int readStr(FILE* file, STRING** table)
         table[i]->freq = 1;
         table[i]->hash_ = hash;
     }
+
+    table[i + 1] = NULL;
 
     return ((chr == EOF) ? 0 : 1);
 }
@@ -86,10 +90,8 @@ STRING** readFile(FILE* file)
         if(maxTableSize == (tableSize - 1))
         {
             EXTEND_SIZE(maxTableSize);
-            table = (STRING**)realloc(table, maxTableSize);
-
+            table = (STRING**)realloc(table, sizeof(STRING*) * maxTableSize);
             memset(&table[tableSize], 0, sizeof(STRING*) * (maxTableSize - tableSize));
-
             checkMem(table);
         }
     }

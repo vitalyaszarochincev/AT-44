@@ -35,5 +35,7 @@ STRING** readFile(FILE*);
 int findHash(unsigned long long, STRING**);
 int findMax(STRING**);
 void printMax(FILE*, STRING**, int);
+void destroyTable(STRING**);
+void destroyFields(STRING**);
 
 #endif /* PROG_H_INCLUDED*/
