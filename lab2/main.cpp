@@ -3,7 +3,7 @@
 int main(int argc, char** argv)
 {
     int paramCode = checkParameters(argc, argv);
-    void (*task[NUM_OF_TASKS])(char*, int);
+    task_t task[NUM_OF_TASKS];
 
     switch(paramCode)
     {
@@ -29,12 +29,12 @@ int main(int argc, char** argv)
         switch(argc)
         {
         case TWO_PARAMETERS:
-            (*task[paramCode - 1])(argv[2], NO_PARAMETERS);
+            task[paramCode - 1](argv[2], NO_PARAMETERS);
 
             break;
 
         case THREE_PARAMETERS:
-            (*task[paramCode - 1])(argv[2], atoi(argv[3]));
+            task[paramCode - 1](argv[2], atoi(argv[3]));
 
             break;
         }

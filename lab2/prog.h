@@ -1,12 +1,18 @@
 #ifndef PROG_H_INCLUDED
 #define PROG_H_INCLUDED
 
+#define CRT_SECURE_NO_WARNINGS //kill visual studio
+
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
 #include <cstdarg>
 #include <vector>
 #include <cctype>
+
+#define BITS_IN_BYTE 8
+
+typedef void (*task_t)(char*, int);
 
 using std::cout;
 using std::cin;
@@ -30,10 +36,8 @@ enum
 };
 
 void __exit(int, ...);
-
 int checkParameters(int, char**);
 void checkFile(FILE*, char*);
-
 void task1(char*, int);
 void task2(char*, int);
 void task3(char*, int);
@@ -44,17 +48,11 @@ void task7(char*, int);
 void task8(char*, int);
 void task9(char*, int);
 void task10(char*, int);
-
-template<typename arrType>
-void writeArrToFile(vector<arrType>&, FILE*);
-
-template<typename digType>
-void readDigFromFile(FILE*, int, digType&);
-
-template<typename arrType>
-void readArr(vector<arrType>&);
-
-template<typename arrType>
-void writeArr(vector<arrType>&, FILE*);
+template<typename arrType> void writeArrToFile(vector<arrType>&, FILE*);
+template<typename arrType> void writeArrToFile(vector<arrType>&, FILE*, char);
+template<typename digType> void readDigFromFile(FILE*, int, digType&);
+template<typename arrType> void readArr(vector<arrType>&);
+template<typename arrType> void writeArr(vector<arrType>&, FILE*);
+void reversDigit(vector<int>&);
 
 #endif // PROG_H_INCLUDED

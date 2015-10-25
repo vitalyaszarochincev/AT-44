@@ -1,18 +1,20 @@
 #include "prog.h"
 
-void task2(char* fileName, int num)
+void reversDigit(vector<int>& digitArr)
 {
-    cout << num << endl;
-}
+    for(size_t i = 0; i < digitArr.size(); i++)
+    {
+        int buff = 0;
 
-void task3(char* fileName, int num)
-{
-    cout << num << endl;
-}
+        for(size_t j = 0; j < sizeof(int) * BITS_IN_BYTE; j++)
+        {
+            buff |= digitArr[i] & 1;
+            buff <<= 1;
+            digitArr[i] >>= 1;
+        }
 
-void task4(char* fileName, int num)
-{
-    cout << num << endl;
+        digitArr[i] = buff;
+    }
 }
 
 void task5(char* fileName, int num)
