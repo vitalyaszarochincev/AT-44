@@ -13,7 +13,7 @@ using std::cin;
 using std::endl;
 using std::vector;
 
-enum Parameters
+enum
 {
     ONLY_EXE = 1,
     ONE_PARAM = 2,
@@ -29,8 +29,11 @@ enum Parameters
     INCORRECT_NUMBER = -5
 };
 
+void __exit(int, ...);
+
 int checkParameters(int, char**);
 void checkFile(FILE*, char*);
+
 void task1(char*, int);
 void task2(char*, int);
 void task3(char*, int);
@@ -41,8 +44,17 @@ void task7(char*, int);
 void task8(char*, int);
 void task9(char*, int);
 void task10(char*, int);
-void __exit(int, ...);
-void writeArrToFile(FILE*);
-void readDigFromFile(FILE*, int);
+
+template<typename arrType>
+void writeArrToFile(vector<arrType>&, FILE*);
+
+template<typename digType>
+void readDigFromFile(FILE*, int, digType&);
+
+template<typename arrType>
+void readArr(vector<arrType>&);
+
+template<typename arrType>
+void writeArr(vector<arrType>&, FILE*);
 
 #endif // PROG_H_INCLUDED

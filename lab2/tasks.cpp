@@ -1,22 +1,5 @@
 #include "prog.h"
 
-void task1(char* fileName, int num)
-{
-    FILE* file = NULL;
-
-    if(num == NO_PARAMETERS)
-    {
-        file = fopen(fileName, "wb");
-        checkFile(file, fileName);
-        writeArrToFile(file);
-    }else
-    {
-        file = fopen(fileName, "rb");
-        checkFile(file, fileName);
-        readDigFromFile(file, num);
-    }
-}
-
 void task2(char* fileName, int num)
 {
     cout << num << endl;

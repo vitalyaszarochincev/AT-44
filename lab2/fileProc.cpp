@@ -1,34 +1,40 @@
 #include "prog.h"
 
-void writeArrToFile(FILE* file)
+void task1(char* fileName, int num)
 {
-    vector<int> readedDig;
+    FILE* file = NULL;
 
-    int digit = 1;
-
-    while(digit)
+    if(num == NO_PARAMETERS)
     {
-        cin >> digit;
+        file = fopen(fileName, "wb");
+        checkFile(file, fileName);
 
-        if(!isdigit(digit))
-        {
-            readedDig.push_back(digit);
-        }
-    }
+        vector<int> digitArr;
 
-    for(size_t i = 0; i < readedDig.size() - 1; i++)
+        writeArrToFile(digitArr, file);
+    }else
     {
-        fwrite(&readedDig[i], sizeof(int), 1, file);
+        file = fopen(fileName, "rb");
+        checkFile(file, fileName);
+
+        int digit = 0;
+        readDigFromFile(file, num, digit);
     }
 }
 
-void readDigFromFile(FILE* file, int num)
+template<typename arrType>
+void writeArrToFile(vector<arrType>& digitArr, FILE* file)
 {
-    fseek(file, (num - 1) * sizeof(int), SEEK_SET);
+    readArr(digitArr);
+    writeArr(digitArr, file);
+}
 
-    int digit = 0;
+template<typename digType>
+void readDigFromFile(FILE* file, int num, digType& digit)
+{
+    fseek(file, (num - 1) * sizeof(digType), SEEK_SET);
 
-    fread(&digit, sizeof(int), 1, file);
+    fread(&digit, sizeof(digType), 1, file);
 
     if(feof(file) || (num <= 0))
     {
@@ -36,4 +42,29 @@ void readDigFromFile(FILE* file, int num)
     }
 
     cout << digit << endl;
+}
+
+template<typename arrType>
+void readArr(vector<arrType>& digitArr)
+{
+    arrType digit = 1;
+
+    while(digit)
+    {
+        cin >> digit;
+
+        if(!isdigit(digit))
+        {
+            digitArr.push_back(digit);
+        }
+    }
+}
+
+template<typename arrType>
+void writeArr(vector<arrType>& digitArr, FILE* file)
+{
+    for(size_t i = 0; i < digitArr.size() - 1; i++)
+    {
+        fwrite(&digitArr[i], sizeof(int), 1, file);
+    }
 }
