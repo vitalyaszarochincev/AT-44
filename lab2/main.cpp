@@ -3,7 +3,6 @@
 int main(int argc, char** argv)
 {
     int paramCode = checkParameters(argc, argv);
-    task_t task[NUM_OF_TASKS];
 
     switch(paramCode)
     {
@@ -15,6 +14,7 @@ int main(int argc, char** argv)
         __exit(paramCode, argv[1]);
 
     default:
+        task_t task[NUM_OF_TASKS];
         task[0] = task1;
         task[1] = task2;
         task[2] = task3;
