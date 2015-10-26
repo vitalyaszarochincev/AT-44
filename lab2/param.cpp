@@ -68,3 +68,31 @@ void checkFile(FILE* file, char* fileName)
         __exit(INCORRECT_FILE, fileName);
     }
 }
+
+void checkFileFormat(FILE* file, char* fileName)
+{
+    char contStr[CONTROL_STR_SIZE + 1] = {0};
+
+    fread(contStr, sizeof(char), CONTROL_STR_SIZE, file);
+
+    if(strcmp(contStr, controlStr))
+    {
+        __exit(INCORRECT_FILE, fileName);
+    }
+}
+
+void formatFile(FILE* file)
+{
+    fwrite(controlStr, sizeof(char), CONTROL_STR_SIZE, file);
+}
+
+void formatFile(FILE* file, long fileLenght)
+{
+    fwrite(controlStr, sizeof(char), CONTROL_STR_SIZE, file);
+    fwrite(&fileLenght, sizeof(long), 1, file);
+}
+
+bool checkFileAndContinue(FILE* file)
+{
+    return (file ? true : false);
+}

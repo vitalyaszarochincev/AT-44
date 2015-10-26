@@ -8,17 +8,21 @@ void task1(char* fileName, int num)
     {
         file = fopen(fileName, "wb");
         checkFile(file, fileName);
+        formatFile(file);
 
         vector<int> digitArr;
 
         writeArrToFile(digitArr, file);
+        fclose(file);
     }else
     {
         file = fopen(fileName, "rb");
         checkFile(file, fileName);
+        checkFileFormat(file, fileName);
 
         int digit = 0;
         readDigFromFile(file, num, digit);
+        fclose(file);
     }
 }
 
@@ -30,17 +34,21 @@ void task2(char* fileName, int num)
     {
         file = fopen(fileName, "wb");
         checkFile(file, fileName);
+        formatFile(file);
 
         vector<short> digitArr;
 
         writeArrToFile(digitArr, file);
+        fclose(file);
     }else
     {
         file = fopen(fileName, "rb");
         checkFile(file, fileName);
+        checkFileFormat(file, fileName);
 
         short digit = 0;
         readDigFromFile(file, num, digit);
+        fclose(file);
     }
 }
 
@@ -52,17 +60,21 @@ void task3(char* fileName, int num)
     {
         file = fopen(fileName, "wb");
         checkFile(file, fileName);
+        formatFile(file);
 
         vector<double> digitArr;
 
         writeArrToFile(digitArr, file);
+        fclose(file);
     }else
     {
         file = fopen(fileName, "rb");
         checkFile(file, fileName);
+        checkFileFormat(file, fileName);
 
         double digit = 0;
         readDigFromFile(file, num, digit);
+        fclose(file);
     }
 }
 
@@ -74,16 +86,45 @@ void task4(char* fileName, int num)
     {
         file = fopen(fileName, "wb");
         checkFile(file, fileName);
+        formatFile(file);
 
         vector<int> digitArr;
         writeArrToFile(digitArr, file, 'r');
+        fclose(file);
     }else
     {
         file = fopen(fileName, "rb");
         checkFile(file, fileName);
+        checkFileFormat(file, fileName);
 
         int digit = 0;
         readDigFromFile(file, num, digit);
+        fclose(file);
+    }
+}
+
+void task5(char* fileName, int num)
+{
+    FILE* file = fopen(fileName, "rb");
+    bool mode = checkFileAndContinue(file);
+
+    if(mode)
+    {
+        checkFileFormat(file, fileName);
+        long fileLenght = countFileLenght(file);
+        fseek(file, OFFSET, SEEK_SET);
+
+        cout << countSumm(file, fileLenght - OFFSET) << endl;
+        fclose(file);
+    }else
+    {
+        file = fopen(fileName, "wb");
+        checkFile(file, fileName);
+        formatFile(file, countFileLenght(file));
+
+        vector<int> digitArr;
+        writeArrToFile(digitArr, file);
+        fclose(file);
     }
 }
 
@@ -110,7 +151,7 @@ void writeArrToFile(vector<arrType>& digitArr, FILE* file, char mode)
 template<typename digType>
 void readDigFromFile(FILE* file, int num, digType& digit)
 {
-    fseek(file, (num - 1) * sizeof(digType), SEEK_SET);
+    fseek(file, (num - 1) * sizeof(digType) + (CONTROL_STR_SIZE * sizeof(char)), SEEK_SET);
 
     fread(&digit, sizeof(digType), 1, file);
 
