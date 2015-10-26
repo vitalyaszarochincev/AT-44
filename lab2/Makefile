@@ -1,10 +1,11 @@
 CC = g++
 
-CFLAGS = -c -Wall -g -fexceptions
+CFLAGS = -c -Wall -g -fexceptions -pedantic
 
 all: lab2
 
 lab2: main.o param.o tasks.o fileProc.o
+	$(CC) main.o param.o tasks.o fileProc.o -o lab2
 
 main.o: main.cpp
 	$(CC) $(CFLAGS) "main.cpp"
