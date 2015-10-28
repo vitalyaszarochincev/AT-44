@@ -1,189 +1,147 @@
 #include "prog.h"
 
-void task1(char* fileName, int num)
+void writeInd(FILE* txtFile, FILE* indFile)
 {
-    FILE* file = NULL;
+    long strInd = 0;
+    char* buff = new char;
 
-    if(num == NO_PARAMETERS)
+    while(!feof(txtFile))
     {
-        file = fopen(fileName, "wb");
-        checkFile(file, fileName);
-        formatFile(file);
-
-        vector<int> digitArr;
-
-        writeArrToFile(digitArr, file);
-        fclose(file);
-    }else
-    {
-        file = fopen(fileName, "rb");
-        checkFile(file, fileName);
-        checkFileFormat(file, fileName);
-
-        int digit = 0;
-        readDigFromFile(file, num, digit);
-        fclose(file);
+        strInd = ftell(txtFile);
+        fwrite(&strInd, sizeof(long), 1, indFile);
+        buff = readStr(txtFile, buff);
     }
 }
 
-void task2(char* fileName, int num)
+void reversDigit(vector<int>& digitArr)
 {
-    FILE* file = NULL;
-
-    if(num == NO_PARAMETERS)
+    for(size_t i = 0; i < digitArr.size(); i++)
     {
-        file = fopen(fileName, "wb");
-        checkFile(file, fileName);
-        formatFile(file);
+        int buff = 0;
 
-        vector<short> digitArr;
-
-        writeArrToFile(digitArr, file);
-        fclose(file);
-    }else
-    {
-        file = fopen(fileName, "rb");
-        checkFile(file, fileName);
-        checkFileFormat(file, fileName);
-
-        short digit = 0;
-        readDigFromFile(file, num, digit);
-        fclose(file);
-    }
-}
-
-void task3(char* fileName, int num)
-{
-    FILE* file = NULL;
-
-    if(num == NO_PARAMETERS)
-    {
-        file = fopen(fileName, "wb");
-        checkFile(file, fileName);
-        formatFile(file);
-
-        vector<double> digitArr;
-
-        writeArrToFile(digitArr, file);
-        fclose(file);
-    }else
-    {
-        file = fopen(fileName, "rb");
-        checkFile(file, fileName);
-        checkFileFormat(file, fileName);
-
-        double digit = 0;
-        readDigFromFile(file, num, digit);
-        fclose(file);
-    }
-}
-
-void task4(char* fileName, int num)
-{
-    FILE* file = NULL;
-
-    if(num == NO_PARAMETERS)
-    {
-        file = fopen(fileName, "wb");
-        checkFile(file, fileName);
-        formatFile(file);
-
-        vector<int> digitArr;
-        writeArrToFile(digitArr, file, 'r');
-        fclose(file);
-    }else
-    {
-        file = fopen(fileName, "rb");
-        checkFile(file, fileName);
-        checkFileFormat(file, fileName);
-
-        int digit = 0;
-        readDigFromFile(file, num, digit);
-        fclose(file);
-    }
-}
-
-void task5(char* fileName, int num)
-{
-    FILE* file = fopen(fileName, "rb");
-    bool mode = checkFileAndContinue(file);
-
-    if(mode)
-    {
-        checkFileFormat(file, fileName);
-        long fileLenght = countFileLenght(file);
-        fseek(file, OFFSET, SEEK_SET);
-
-        cout << countSumm(file, fileLenght - OFFSET) << endl;
-        fclose(file);
-    }else
-    {
-        file = fopen(fileName, "wb");
-        checkFile(file, fileName);
-        formatFile(file, countFileLenght(file));
-
-        vector<int> digitArr;
-        writeArrToFile(digitArr, file);
-        fclose(file);
-    }
-}
-
-template<typename arrType>
-void writeArrToFile(vector<arrType>& digitArr, FILE* file)
-{
-    readArr(digitArr);
-    writeArr(digitArr, file);
-}
-
-template<typename arrType>
-void writeArrToFile(vector<arrType>& digitArr, FILE* file, char mode)
-{
-    readArr(digitArr);
-
-    if(mode == 'r')
-    {
-        reversDigit(digitArr);
-    }
-
-    writeArr(digitArr, file);
-}
-
-template<typename digType>
-void readDigFromFile(FILE* file, int num, digType& digit)
-{
-    fseek(file, (num - 1) * sizeof(digType) + (CONTROL_STR_SIZE * sizeof(char)), SEEK_SET);
-
-    fread(&digit, sizeof(digType), 1, file);
-
-    if(feof(file) || (num <= 0))
-    {
-        __exit(INCORRECT_NUMBER, num);
-    }
-
-    cout << digit << endl;
-}
-
-template<typename arrType>
-void readArr(vector<arrType>& digitArr)
-{
-    arrType digit = 1;
-
-    while(digit)
-    {
-        cin >> digit;
-
-        if(!isdigit(digit))
+        for(size_t j = 0; j < sizeof(int) * BITS_IN_BYTE; j++)
         {
-            digitArr.push_back(digit);
+            buff |= digitArr[i] & LAST_BIT;
+            buff <<= 1;
+            digitArr[i] >>= 1;
+        }
+
+        digitArr[i] = buff;
+    }
+}
+
+int countSumm(FILE* file, long fileLenght)
+{
+    int sum = 0;
+    int buff = 0;
+    size_t digitNum = fileLenght / sizeof(int);
+
+    for(size_t i = 0; i < digitNum; i++)
+    {
+        fread(&buff, sizeof(int), 1, file);
+        
+        if(!isdigit(buff))
+        {
+            sum += buff;
         }
     }
+
+    return sum;
 }
 
-template<typename arrType>
-void writeArr(vector<arrType>& digitArr, FILE* file)
+long countFileLenght(FILE* file)
 {
-    for(size_t i = 0; i < digitArr.size() - 1; i++)
+    fseek(file, 0, SEEK_END);
+
+    long lenght = ftell(file);
+
+    rewind(file);
+
+    return lenght;
+}
+
+char* findStr(long ind, FILE* txtFile, FILE* indFile)
+{
+    fseek(indFile, sizeof(long) * ind, SEEK_CUR);
+
+    if(feof(indFile))
     {
-        fwrite(&digitArr[i], sizeof(arrType), 1, file);
+        __exit(INCORRECT_INDEX, ind);
     }
+
+    long strAddr = 0;
+
+    fread(&strAddr, sizeof(long), 1, indFile);
+    fseek(txtFile, strAddr, SEEK_SET);
+
+    if(feof(txtFile))
+    {
+        __exit(INCORRECT_INDEX, ind);
+    }
+
+    char* buff = new char;
+
+    return readStr(txtFile, buff);
+}
+
+FILE* openFile(char* fileName, const char mode[MODE_LENGHT + 1])
+{
+    FILE* file = fopen(fileName, mode);
+    checkFile(file, fileName);
+
+    if(!strcmp(mode, "rb"))
+    {
+        checkFileFormat(file, fileName);
+    }else if(!strcmp(mode, "wb"))
+    {
+        formatFile(file);
+    }
+    return file;
+}
+
+char* readStr(FILE* file, char* buff)
+{
+    static size_t buffSize = START_STRING_SIZE;
+
+    buff = (char*)alloc(buff, sizeof(char) * buffSize);
+    memset(buff, 0, sizeof(char) * buffSize);
+
+    char chr = 0;
+
+    for(size_t i = 0; !feof(file); i++)
+    {
+        chr = fgetc(file);
+
+        if((chr == '\n') || (chr == EOF))
+        {
+            break;
+        }
+
+        buff[i] = chr;
+
+        if(i == (buffSize - 1))
+        {
+            buff = (char*)alloc(buff, sizeof(char) * buffSize);
+            memset(&buff[i], 0, sizeof(char) * (buffSize - i));
+        }
+    }
+
+    return buff;
+}
+
+void checkMem(void* buff)
+{
+    if(!buff)
+    {
+        fcloseall();
+        __exit(MEMORY_NOT_ALLOCATED);
+    }
+}
+
+void* alloc(void* buff, size_t size)
+{
+    buff = realloc(buff, sizeof(char) * size);
+    checkMem(buff);
+
+    return buff;
 }

@@ -1,6 +1,6 @@
 CC = g++
 
-CFLAGS = -c -Wall -g -fexceptions -pedantic
+CFLAGS = -c -Wall -Wextra -g -fexceptions -pedantic
 
 all: lab2
 

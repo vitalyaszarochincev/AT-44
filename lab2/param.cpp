@@ -55,6 +55,14 @@ void __exit(int err, ...)
     case INCORRECT_NUMBER:
         cout << "incorrect number " << va_arg(argList, int) << endl;
         break;
+
+    case INCORRECT_INDEX:
+        cout << "incorrect index " << va_arg(argList, long) << endl;
+        break;
+
+    case MEMORY_NOT_ALLOCATED:
+        cout << "memory is not allocated" << endl;
+        break;
     }
 
     va_end(argList);
@@ -95,4 +103,14 @@ void formatFile(FILE* file, long fileLenght)
 bool checkFileAndContinue(FILE* file)
 {
     return (file ? true : false);
+}
+
+char* createFileName(char* oldName)
+{
+    char* newName = oldName;
+    size_t nameLenght = strlen(newName);
+    strcpy(&newName[nameLenght - ESCALATION], ".idx");
+
+    return newName;
+
 }
