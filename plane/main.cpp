@@ -6,10 +6,10 @@ int main()
     double angle = 0;
     double high = 0;
     bool flag = false;
+    int angleLimit = 0;
 
     system("color F0");
-    system("cls");
-    cout << "press up or down to change angle" << endl << "press esc to exit" << endl << "angle : " << angle << " high : " << high;
+    printStatus(angle, high);
 
     while(1)
     {
@@ -24,7 +24,13 @@ int main()
         case UP:
             if(flag)
             {
-                angle += OFFSET;
+                if(angle < MAX_ANGLE)
+                {
+                    angle += OFFSET;
+                    angleLimit = 0;
+                }else
+                    angleLimit = 1;
+
                 flag = false;
             }
 
@@ -33,7 +39,13 @@ int main()
         case DOWN:
             if(flag)
             {
-                angle -= OFFSET;
+                if(angle > MIN_ANGLE)
+                {
+                    angle -= OFFSET;
+                    angleLimit = 0;
+                }else
+                    angleLimit = -1;
+
                 flag = false;
             }
 
@@ -45,10 +57,54 @@ int main()
         }
 
         high += countHigh(angle);
-        Sleep(100);
-        system("cls");
-        cout << "angle : " << angle << " high : " << high;
+        Sleep(DELAY);
+        printStatus(angle, high);
+
+        if(angleLimit)
+        {
+            printWarning(angleLimit);
+        }
+
+        if(high < MIN_HIGH)
+        {
+            printError();
+            exit(0);
+        }
     }
 
     return 0;
+}
+
+void printError()
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, (WORD) (0xFC));
+    cout << "plane crushed!" << endl;
+    SetConsoleTextAttribute(hConsole, (WORD) (0xF0));
+    system("pause");
+}
+
+void printStatus(double angle, double high)
+{
+    system("cls");
+    cout << "press up or down to change angle" << endl << "press esc to exit" << endl << "angle : " << angle << " high : " << high << endl;
+}
+
+void printWarning(int status)
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, (WORD) (0xFC));
+
+    switch (status)
+    {
+    case 1:
+        cout << "maximum angle" << endl;
+        break;
+
+    case -1:
+        cout << "minimum angle" << endl;
+        break;
+    }
+
+    SetConsoleTextAttribute(hConsole, (WORD) (0xF0));
 }
