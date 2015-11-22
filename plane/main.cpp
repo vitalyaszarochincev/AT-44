@@ -7,6 +7,7 @@ int main()
     double high = 0;
     bool flag = false;
 
+    system("color F0");
     system("cls");
     cout << "press up or down to change angle" << endl << "press esc to exit" << endl << "angle : " << angle << " high : " << high;
 
