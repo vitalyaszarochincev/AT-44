@@ -8,9 +8,10 @@ public class GUI extends JFrame
 	
 	public GUI() 
 	{
-		final int WINDOW_SIZE = 700;
+		final int WINDOW_SIZE = 1000;
+		final int EXCESS = 150;
 		
-		setSize(WINDOW_SIZE, WINDOW_SIZE / 2);
+		setSize(WINDOW_SIZE, WINDOW_SIZE - EXCESS);
 		setTitle("buffon");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		

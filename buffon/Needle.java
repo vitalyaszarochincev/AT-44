@@ -12,6 +12,8 @@ public class Needle
 	public double yHigh;
 	public double xHigh;
 	private double angle;
+	public final int Y_MIN = 200;
+	public final int Y_MAX = 100;
 
 	public Needle() 
 	{
@@ -22,18 +24,16 @@ public class Needle
 	
 	public void drop() 
 	{
-		final int NEEDLE_LEN = 13;
+		final int NEEDLE_LEN = (int)((double)(Y_MIN - Y_MAX) * 0.13);
 		final int MAX_ANGLE = 180;
-		final int X_MAX = 600;
-		final int Y_MAX = 150;
+		final int X_MAX = 900;
 		final int X_MIN = 50;
-		final int Y_MIN = 150;
 		
 		this.yLow = generator.nextInt(Y_MAX) + Y_MIN;
 		this.xLow = generator.nextInt(X_MAX) + X_MIN;
 		this.angle = MAX_ANGLE * generator.nextDouble();
 		
-		this.yHigh = this.yLow + (NEEDLE_LEN * Math.sin(Math.toRadians(this.angle)));
-		this.xHigh = this.xLow + (NEEDLE_LEN * Math.cos(Math.toRadians(this.angle)));
+		this.yHigh = yLow + (NEEDLE_LEN * Math.sin(Math.toRadians(angle)));
+		this.xHigh = xLow + (NEEDLE_LEN * Math.cos(Math.toRadians(angle)));
 	}
 }
