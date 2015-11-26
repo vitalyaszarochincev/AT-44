@@ -64,8 +64,8 @@ public class Paint extends JComponent
 		int totalDrops = needle.hits + needle.miss;
 		double chance = (double)needle.hits / (double)totalDrops;
 	
-		graph2D.drawString("Total miss = " + needle.miss + " Total drops = " + totalDrops, STATUS_X, STATUS_Y + STATUS_OFFSET);
-		graph2D.drawString("Total hits = " + needle.hits + " Chance = " + chance, STATUS_X, STATUS_Y + (STATUS_OFFSET * 2));
+		graph2D.drawString("Total miss : " + needle.miss + "    Total drops : " + totalDrops, STATUS_X, STATUS_Y + STATUS_OFFSET);
+		graph2D.drawString("Total hits : " + needle.hits + "    Chance : " + chance, STATUS_X, STATUS_Y + (STATUS_OFFSET * 2));
 		
 		graph2D.drawLine(COORDINATE_X_LEFT - COORDINATE_OFFSET, COORDINATE_Y_LOW, COORDINATE_X_RIGHT, COORDINATE_Y_LOW);
 		graph2D.drawLine(COORDINATE_X_LEFT, COORDINATE_Y_LOW + COORDINATE_OFFSET, COORDINATE_X_LEFT, COORDINATE_Y_HIGH);
@@ -95,14 +95,23 @@ public class Paint extends JComponent
 		graph2D.drawString("X", COORDINATE_X_RIGHT - MARK_OFFSET, COORDINATE_Y_LOW + (2 * POINTER_OFFSET));
 		graph2D.drawString("Y", COORDINATE_X_LEFT - (2 * POINTER_OFFSET), COORDINATE_Y_HIGH + POINTER_OFFSET);
 		
-		Color graphicColor = new Color(255, 0, 0);
-		graph2D.setColor(graphicColor);
-		graph2D.drawLine((int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT), (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)), (int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT), (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)) - 5);
+		graph2D.setColor(Color.red);
+		graph2D.drawLine((int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT), (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)), (int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT), (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)));
 		
-		/*try {
+		graph2D.setColor(Color.black);
+
+		for(int i = (int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT); i > COORDINATE_X_LEFT; i -= (4 * MARK_OFFSET))
+			graph2D.drawLine(i, (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)), i - MARK_OFFSET, (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)));
+		
+		for(int i = (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)); i < COORDINATE_Y_LOW; i+= (3 * MARK_OFFSET))
+			graph2D.drawLine((int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT), i, (int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT), i + MARK_OFFSET);
+		
+		/*try 
+		{
 			Thread.currentThread();
 			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e) 
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
