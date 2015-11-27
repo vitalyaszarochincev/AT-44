@@ -1,10 +1,14 @@
 package BuffonNeedle;
 
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
 
 public class GUI extends JFrame
 {
 	private static final long serialVersionUID = 1L;
+	public static ArrayList<Integer> graphPointsX = new ArrayList<Integer>();
+	public static ArrayList<Integer> graphPointsY = new ArrayList<Integer>();
 	
 	public GUI() 
 	{

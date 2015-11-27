@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import BuffonNeedle.GUI;
 
 import javax.swing.JComponent;
 
@@ -96,30 +97,29 @@ public class Paint extends JComponent
 		
 		graph2D.drawString("X", COORDINATE_X_RIGHT - MARK_OFFSET, COORDINATE_Y_LOW + (2 * POINTER_OFFSET));
 		graph2D.drawString("Y", COORDINATE_X_LEFT - (2 * POINTER_OFFSET), COORDINATE_Y_HIGH + POINTER_OFFSET);
-
+		
+		GUI.graphPointsX.add((int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT));
+		GUI.graphPointsY.add((int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)));
+		
+		int pointsX[] = new int [GUI.graphPointsX.size()];
+		int pointsY[] = new int [GUI.graphPointsY.size()];
+				
+		for(int i = 0; i < GUI.graphPointsX.size(); i++)
+			pointsX[i] = GUI.graphPointsX.get(i);
+		
+		for(int i = 0; i < GUI.graphPointsY.size(); i++)
+			pointsY[i] = GUI.graphPointsY.get(i);
+		
+		graph2D.setColor(Color.red);
+		graph2D.drawPolyline(pointsX, pointsY, GUI.graphPointsX.size());
+		
+		graph2D.setColor(Color.black);
+		
 		for(int i = (int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT); i > COORDINATE_X_LEFT; i -= (4 * MARK_OFFSET))
 			graph2D.drawLine(i, (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)), i - MARK_OFFSET, (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)));
 		
 		for(int i = (int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)); i < COORDINATE_Y_LOW; i+= (3 * MARK_OFFSET))
 			graph2D.drawLine((int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT), i, (int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT), i + MARK_OFFSET);
-		
-		ArrayList<Integer> graphPointsX = new ArrayList<Integer>();
-		ArrayList<Integer> graphPointsY = new ArrayList<Integer>();
-		
-		graphPointsX.add((int)(Math.log10(totalDrops) * SCALE + COORDINATE_X_LEFT));
-		graphPointsY.add((int)(COORDINATE_Y_LOW - (chance * SCALE * PIXIELS_IN_PERSENT / SEGMET_NUM)));
-		
-		int pointsX[] = new int [graphPointsX.size()];
-		int pointsY[] = new int [graphPointsY.size()];
-				
-		for(int i = 0; i < graphPointsX.size(); i++)
-			pointsX[i] = graphPointsX.get(i);
-		
-		for(int i = 0; i < graphPointsY.size(); i++)
-			pointsY[i] = graphPointsY.get(i);
-		
-		graph2D.setColor(Color.red);
-		graph2D.drawPolyline(pointsX, pointsY, graphPointsX.size());
 		
 		/*try 
 		{
