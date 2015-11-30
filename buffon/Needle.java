@@ -7,6 +7,7 @@ public class Needle
 	private Random generator;
 	public int hits;
 	public int miss;
+	public int drops;
 	public int yLow;
 	public int xLow;
 	public double yHigh;
@@ -19,6 +20,7 @@ public class Needle
 	{
 		this.hits = 0;
 		this.miss = 0;
+		this.drops = 0;
 		this.generator = new Random();
 	}
 	
@@ -35,5 +37,12 @@ public class Needle
 		
 		this.yHigh = yLow + (NEEDLE_LEN * Math.sin(Math.toRadians(angle)));
 		this.xHigh = xLow + (NEEDLE_LEN * Math.cos(Math.toRadians(angle)));
+		
+		this.drops++;
+	}
+	
+	public double getChance()
+	{
+		return (double)this.hits / (double)this.drops;
 	}
 }
