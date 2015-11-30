@@ -1,5 +1,6 @@
 package BuffonNeedle;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -7,15 +8,14 @@ import javax.swing.JFrame;
 public class GUI extends JFrame
 {
 	private static final long serialVersionUID = 1L;
-	public static ArrayList<Integer> graphPointsX = new ArrayList<Integer>();
-	public static ArrayList<Integer> graphPointsY = new ArrayList<Integer>();
+	public static ArrayList<Integer> graphChancePointsX = new ArrayList<Integer>();
+	public static ArrayList<Integer> graphChancePointsY = new ArrayList<Integer>();
+	public static ArrayList<Integer> graphErrorPointsY = new ArrayList<Integer>();
+	public static final int WINDOW_SIZE = 600;
 	
 	public GUI() 
-	{
-		final int WINDOW_SIZE = 1000;
-		final int EXCESS = 150;
-		
-		setSize(WINDOW_SIZE, WINDOW_SIZE - EXCESS);
+	{	
+		setSize(WINDOW_SIZE, WINDOW_SIZE);
 		setTitle("buffon");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -23,7 +23,7 @@ public class GUI extends JFrame
 		setVisible(true);
 	}
 	
-	public static void main(String[] args) 
+	public static void main(String[] args) throws IOException 
 	{
 		@SuppressWarnings("unused")
 		GUI window = new GUI();

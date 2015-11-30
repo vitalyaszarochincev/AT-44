@@ -15,6 +15,8 @@ public class Needle
 	private double angle;
 	public final int Y_MIN = 200;
 	public final int Y_MAX = 100;
+	private final double LEN_ATTITUDE = 0.13;
+	private final int NEEDLE_LEN = (int)((double)(Y_MIN - Y_MAX) * LEN_ATTITUDE);
 
 	public Needle() 
 	{
@@ -26,9 +28,8 @@ public class Needle
 	
 	public void drop() 
 	{
-		final int NEEDLE_LEN = (int)((double)(Y_MIN - Y_MAX) * 0.13);
 		final int MAX_ANGLE = 180;
-		final int X_MAX = 900;
+		final int X_MAX = 500;
 		final int X_MIN = 50;
 		
 		this.yLow = generator.nextInt(Y_MAX) + Y_MIN;
@@ -44,5 +45,15 @@ public class Needle
 	public double getChance()
 	{
 		return (double)this.hits / (double)this.drops;
+	}
+	
+	public double getTheoreticalChance()
+	{
+		return (2 * NEEDLE_LEN) / ((Y_MIN - Y_MAX) * Math.PI); 
+	}
+	
+	public double getError()
+	{
+		return Math.abs(getTheoreticalChance() - getChance()) / getTheoreticalChance();
 	}
 }
