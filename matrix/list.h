@@ -112,18 +112,18 @@ public:
         }
     }
 
-    size_t size()
+    size_t getSize()
     {
-        size_t size = 0;
+        size_t result = 0;
         Node<ValType>* tmp = node;
 
         while(tmp)
         {
-            size++;
+            result++;
             tmp = tmp->next;
         }
 
-        return size;
+        return result;
     }
 
     bool isEmpty()
@@ -133,34 +133,16 @@ public:
 
     void add(ValType data)
     {
-        if(!isEmpty())
-        {
-            node = new Node<ValType>;
-            node->val = data;
-            node->next = NULL;
-        }else
-        {
-            Node<ValType>* tmp = node;
-
-            while(tmp->next)
-                tmp = tmp->next;
-
-            tmp->next = new Node<ValType>;
-            tmp->next->val = data;
-            tmp->next->next = NULL;
-        }
+        add(data, getSize());
     }
 
     void add(ValType data, size_t num)
     {
-        if(num > size())
-        {
-            add(data);
+        if(num > getSize() + 1)
             return;
-        }
 
         Node<ValType>* tmp = node;
-        Node<ValType>* buff;
+        Node<ValType>* buff = NULL;
 
         if(num == 1)
         {
@@ -182,16 +164,94 @@ public:
         tmp->next->next = buff;
     }
 
+    void purge()
+    {
+        purge(getSize());
+    }
+
+    void purge(size_t num)
+    {
+        if(!isEmpty() || (num > getSize()))
+            return;
+
+        if(num == 1)
+        {
+            delete(node);
+
+            return;
+        }
+
+        Node<ValType>* tmp = node;
+        Node<ValType>* buff = NULL;
+
+        for(size_t i = 1; i < num - 1; i++)
+            tmp = tmp->next;
+
+            buff = tmp->next->next;
+            delete(tmp->next);
+            tmp->next = buff;
+    }
+
+    void revers()
+    {
+        if(!isEmpty())
+            return;
+
+        Node<ValType>* tmp = node;
+        Node<ValType>* buff = tmp;
+
+        while(tmp->next)
+            tmp = tmp->next;
+
+        node = tmp;
+
+        do
+        {
+            tmp = buff;
+
+            while(tmp->next->next)
+            {
+                tmp = tmp->next;
+            }
+
+            tmp->next->next = tmp;
+            tmp->next = 0;
+        }while(tmp != buff);
+    }
+
+    ValType getHead()
+    {
+        return getVal(1);
+    }
+
+    ValType getTail()
+    {
+        return getVal(getSize());
+    }
+
+    ValType getVal(size_t num)
+    {
+        if(!isEmpty() || (num > getSize()) || (num == 0))
+            return 0;
+
+        Node<ValType>* tmp = node;
+
+        for(size_t i = 1; i < num; i++)
+            tmp = tmp->next;
+
+        return tmp->val;
+    }
+
     void operator +=(ValType data)
     {
         add(data);
     }
 
-/*    void operator +=(List<ValType> list)
+    void operator +=(List<ValType>& otherList)
     {
         if(!isEmpty())
         {
-            node = list.node;
+            node = otherList.node;
 
             return;
         }
@@ -201,8 +261,13 @@ public:
         while(tmp->next)
             tmp = tmp->next;
 
-        tmp->next = list.node;
-    }*/
+        tmp->next = otherList.node;
+    }
+
+    ValType operator [](size_t num)
+    {
+        return getVal(num + 1);
+    }
 };
 
 #endif // MATRIX_H_INCLUDED
