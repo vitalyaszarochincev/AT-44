@@ -108,34 +108,6 @@ public:
         cout << endl;
     }
 
-    void print(FILE* file)
-    {
-        if(!file)
-            return;
-
-        Node<ValType>* tmp = node;
-
-        while(tmp)
-        {
-            fwrite(&tmp->val, sizeof(ValType), 1, file);
-            tmp = tmp->next;
-        }
-    }
-
-    void print(ofstream& stream)
-    {
-        if(!stream.is_open())
-            return;
-
-        Node<ValType>* tmp = node;
-
-        while(tmp)
-        {
-            stream.write((char*)(&tmp->val), sizeof(ValType));
-            tmp = tmp->next;
-        }
-    }
-
     size_t getSize()
     {
         size_t result = 0;
@@ -155,42 +127,57 @@ public:
         return (node ? true : false);
     }
 
-    void add(ValType data)
+    void pushBack(ValType data)
     {
         add(data, getSize());
     }
 
+    void pushFront(ValType data)
+    {
+        add(data, 0);
+    }
+
     void add(ValType data, size_t num)
     {
-        if(num > getSize() + 1)
-            return;
-
-        Node<ValType>* tmp = node;
-        Node<ValType>* buff = NULL;
-
-        if(num == 1)
+        if(!isEmpty())
         {
-            buff = tmp;
-            tmp= new Node<ValType>;
-            tmp->val = data;
-            tmp->next = buff;
-            node = tmp;
+            node = new Node<ValType>;
+            node->val = data;
+            node->next = NULL;
 
             return;
         }
 
-        for(size_t i = 1; i < num - 1; i++)
-            tmp = tmp->next;
+        Node<ValType>* buff = node;
 
-        buff = tmp->next;
-        tmp->next = new Node<ValType>;
-        tmp->next->val = data;
-        tmp->next->next = buff;
+        for(size_t i = 0; (i < num) && (buff->next); i++)
+            buff = buff->next;
+
+        Node<ValType>* tmp = new Node<ValType>;
+        tmp->val = data;
+
+        if(buff->next)
+        {
+            buff->next = tmp->next;
+        }else
+        {
+            tmp->next = NULL;
+        }
+
+        buff->next = tmp;
+
+        if(num == 1)
+            node = buff;
     }
 
-    void purge()
+    void purgeBack()
     {
         purge(getSize());
+    }
+
+    void purgeFront()
+    {
+        purge(0);
     }
 
     void purge(size_t num)
@@ -291,6 +278,93 @@ public:
     ValType operator [](size_t num)
     {
         return getVal(num + 1);
+    }
+};
+
+struct Elem
+{
+    unsigned line;
+    unsigned column;
+    int val;
+};
+
+class Matrix
+{
+private:
+    List<Elem*> elemList;
+    size_t lines;
+    size_t columns;
+
+public:
+    Matrix()
+    {
+        elemList = NULL;
+        lines = 0;
+        columns = 0;
+    }
+
+    Matrix(int arrMatrix[3][3], size_t lines, size_t columns)
+    {
+        Elem* elem;
+
+        this->lines = lines;
+        this->columns = columns;
+
+        for(size_t i = 0; i < lines; i++)
+            for(size_t j = 0; j < columns; j++)
+                if(arrMatrix[i][j])
+                {
+                    elem = new Elem;
+                    elem->line = i;
+                    elem->column = j;
+                    elem->val = arrMatrix[i][j];
+                    elemList.pushBack(elem);
+                }
+    }
+
+    void print()
+    {
+        Elem* tmp = elemList[0];
+        size_t k = 0;
+
+        for(size_t i = 0; i < lines; i++)
+        {
+            for(size_t j = 0; j < columns; j++)
+                if(tmp && (i == tmp->line) && (j == tmp->column))
+                {
+                    cout << tmp->val << " ";
+
+                    k++;
+                    tmp = elemList[k];
+                }else
+                    cout << 0 << " ";
+
+            cout << endl;
+        }
+
+        cout << endl;
+    }
+
+    void operator *=(int digit)
+    {
+        for(size_t i = 0; i < elemList.getSize(); i++)
+        {
+            elemList[i]->val *= digit;
+        }
+    }
+
+    void operator +=(Matrix otherMatr)
+    {
+        if((this->lines != otherMatr.lines) || (this->columns != otherMatr.columns))
+            return;
+
+        for(size_t i = 0; i < otherMatr.elemList.getSize(); i++)
+        {
+            if((this->elemList[i]->line == otherMatr.elemList[i]->line) && (this->elemList[i]->column == otherMatr.elemList[i]->column))
+                this->elemList[i]->val += otherMatr.elemList[i]->val;
+            else
+                this->elemList.add(otherMatr.elemList[i], i);
+        }
     }
 };
 
