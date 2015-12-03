@@ -58,6 +58,30 @@ public:
         }
     }
 
+    List(List<ValType>& copyList)
+    {
+        if(!copyList.isEmpty())
+            node = NULL;
+
+        node = new Node<ValType>;
+        node->val = copyList.node->val;
+        node->next = copyList.node->next;
+
+        if(copyList.getSize() == 1)
+            return;
+
+        Node<ValType>* tmp = copyList.node;
+        Node<ValType>* buff = node;
+
+        while(tmp)
+        {
+            buff = new Node<ValType>;
+            buff->val = tmp->val;
+            buff->next = tmp->next;
+            tmp = tmp->next;
+        }
+    }
+
     ~List()
     {
         Node<ValType>* tmp;
