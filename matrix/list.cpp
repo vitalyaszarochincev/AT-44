@@ -24,14 +24,14 @@ List(const ValType* data, size_t num)
     if(num == 0)
         return;
 
-    node = new Node<ValType>;
-    node->val = data[0];
-    node->next = NULL;
+    this->node = new Node<ValType>;
+    this->node->val = data[0];
+    this->node->next = NULL;
 
     if(num == 1)
         return;
 
-    Node<ValType>* tmp = node;
+    Node<ValType>* tmp = this->node;
 
     for(size_t i = 1; i < num; i++)
     {
@@ -47,11 +47,11 @@ List<ValType>::
 List(List<ValType>& copyList)
 {
     if(!copyList.isEmpty())
-        node = NULL;
+        this->node = NULL;
 
-    node = new Node<ValType>;
-    node->val = copyList.node->val;
-    node->next = copyList.node->next;
+    this->node = new Node<ValType>;
+    this->node->val = copyList.node->val;
+    this->node->next = copyList.node->next;
 
     if(copyList.getSize() == 1)
         return;
@@ -76,8 +76,8 @@ List<ValType>::
 
     while(node)
     {
-        tmp = node;
-        node = node->next;
+        tmp = this->node;
+        this->node = this->node->next;
         delete(tmp);
     }
 }
@@ -92,7 +92,7 @@ print()
         return;
     }
 
-    Node<ValType>* tmp = node;
+    Node<ValType>* tmp = this->node;
 
     while(tmp)
     {
@@ -108,7 +108,7 @@ size_t List<ValType>::
 getSize()
 {
     size_t result = 0;
-    Node<ValType>* tmp = node;
+    Node<ValType>* tmp = this->node;
 
     while(tmp)
     {
@@ -123,7 +123,7 @@ template<class ValType>
 bool List<ValType>::
 isEmpty()
 {
-    return (node ? true : false);
+    return (this->node ? true : false);
 }
 
 template<class ValType>
@@ -144,28 +144,28 @@ template<class ValType>
 void List<ValType>::
 add(ValType data, size_t num)
 {
-    if(num > getSize() + 1)
+    if(num > this->getSize() + 1)
         return;
 
     if(num == 1)
     {
         if(!isEmpty())
         {
-            node = new Node<ValType>;
-            node->val = data;
-            node->next = NULL;
+            this->node = new Node<ValType>;
+            this->node->val = data;
+            this->node->next = NULL;
             return;
         }else
         {
-            Node<ValType>* tmp = node;
-            node = new Node<ValType>;
-            node->val = data;
-            node->next = tmp;
+            Node<ValType>* tmp = this->node;
+            this->node = new Node<ValType>;
+            this->node->val = data;
+            this->node->next = tmp;
             return;
         }
     }
 
-    Node<ValType>* buff = node;
+    Node<ValType>* buff = this->node;
 
     for(size_t i = 1; (i < num - 1) && (buff->next); i++)
         buff = buff->next;
@@ -181,7 +181,7 @@ add(ValType data, size_t num)
     buff->next = tmp;
 
     if(num == 1)
-        node = buff;
+        this->node = buff;
 }
 
 template<class ValType>
@@ -202,19 +202,19 @@ template<class ValType>
 ValType List<ValType>::
 pop(size_t num)
 {
-    if(!isEmpty() || (num > getSize() + 1))
+    if(!this->isEmpty() || (num > this->getSize() + 1))
         return 0;
 
     if(num == 1)
     {
-        Node<ValType>* tmp = node->next;
-        ValType result = node->val;
-        delete(node);
-        node = tmp;
+        Node<ValType>* tmp = this->node->next;
+        ValType result = this->node->val;
+        delete(this->node);
+        this->node = tmp;
         return result;
     }
 
-    Node<ValType>* tmp = node;
+    Node<ValType>* tmp = this->node;
     Node<ValType>* buff = NULL;
 
     for(size_t i = 1; i < num - 1; i++)
@@ -238,16 +238,16 @@ template<class ValType>
 void List<ValType>::
 revers()
 {
-    if(!isEmpty())
+    if(!this->isEmpty())
         return;
 
-    Node<ValType>* tmp = node;
+    Node<ValType>* tmp = this->node;
     Node<ValType>* buff = tmp;
 
     while(tmp->next)
         tmp = tmp->next;
 
-    node = tmp;
+    this->node = tmp;
 
     do
     {
@@ -265,24 +265,24 @@ template<class ValType>
 ValType List<ValType>::
 getHead()
 {
-    return getVal(1);
+    return this->getVal(1);
 }
 
 template<class ValType>
 ValType List<ValType>::
 getTail()
 {
-    return getVal(getSize());
+    return this->getVal(getSize());
 }
 
 template<class ValType>
 ValType List<ValType>::
 getVal(size_t num)
 {
-    if(!isEmpty() || (num > getSize()) || (num == 0))
+    if(!this->isEmpty() || (num > this->getSize()) || (num == 0))
         return 0;
 
-    Node<ValType>* tmp = node;
+    Node<ValType>* tmp = this->node;
 
     for(size_t i = 1; i < num; i++)
         tmp = tmp->next;
@@ -314,7 +314,7 @@ operator =(List<ValType>& copyList)
         return;
 
     tmp = copyList.node;
-    Node<ValType>* buff = node;
+    Node<ValType>* buff = this->node;
 
     while(tmp)
     {
@@ -329,20 +329,20 @@ template<class ValType>
 void List<ValType>::
 operator +=(ValType data)
 {
-    add(data);
+    this->add(data);
 }
 
 template<class ValType>
 void List<ValType>::
 operator +=(List<ValType>& otherList)
 {
-    if(!isEmpty())
+    if(!this->isEmpty())
     {
-        node = otherList.node;
+        this->node = otherList.node;
         return;
     }
 
-    Node<ValType>* tmp = node;
+    Node<ValType>* tmp = this->node;
 
     while(tmp->next)
         tmp = tmp->next;
@@ -354,7 +354,7 @@ template<class ValType>
 ValType List<ValType>::
 operator [](size_t num)
 {
-    return getVal(num + 1);
+    return this->getVal(num + 1);
 }
 
 #endif // LIST_CPP_INCLUDED

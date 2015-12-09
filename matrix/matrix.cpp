@@ -18,7 +18,7 @@ lines(dim), columns(dim)
         elem->line = i;
         elem->column = i;
         elem->val = constant;
-        elemList.pushBack(elem);
+        this->elemList.pushBack(elem);
     }
 }
 
@@ -36,14 +36,14 @@ lines(lines), columns(columns)
                 elem->line = i;
                 elem->column = j;
                 elem->val = arrMatrix[i][j];
-                elemList.pushBack(elem);
+                this->elemList.pushBack(elem);
             }
 }
 
 void Matrix::
 print()
 {
-    Elem* tmp = elemList[0];
+    Elem* tmp = this->elemList[0];
     size_t k = 0;
 
     for(size_t i = 0; i < lines; i++)
@@ -53,7 +53,7 @@ print()
             {
                 cout << tmp->val << " ";
                 k++;
-                tmp = elemList[k];
+                tmp = this->elemList[k];
             }else
                 cout << 0 << " ";
 
@@ -66,8 +66,8 @@ print()
 void Matrix::
 operator *=(int digit)
 {
-    for(size_t i = 0; i < elemList.getSize(); i++)
-        elemList[i]->val *= digit;
+    for(size_t i = 0; i < this->elemList.getSize(); i++)
+        this->elemList[i]->val *= digit;
 }
 
 void Matrix::
