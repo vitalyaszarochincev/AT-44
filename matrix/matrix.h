@@ -13,19 +13,20 @@ struct Elem
 class Matrix
 {
 private:
-    List<Elem*> elemList;
-    size_t lines;
-    size_t columns;
+    List<Elem*> m_elemList;
+    size_t m_lines;
+    size_t m_columns;
 
 public:
     Matrix();
     Matrix(int, size_t);
-    Matrix(const int** arrMatrix, size_t, size_t);
+    Matrix(int** arrMatrix, size_t, size_t);
 
     void print();
 
     void operator *=(int);
-    void operator +=(Matrix);
+
+    void operator +=(Matrix&);
 };
 
 #endif // MATRIX_H_INCLUDED

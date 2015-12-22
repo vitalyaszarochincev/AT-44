@@ -1,14 +1,14 @@
 #include "list.h"
 #include "matrix.h"
+#include <fstream>
 
-Matrix::
-Matrix() :
-lines(0), columns(0)
-{}
+///////////////////////////////////////Matrix()/////////////////////////////////////////////////////////
 
-Matrix::
-Matrix(int constant, size_t dim) :
-lines(dim), columns(dim)
+Matrix::Matrix():m_lines(0), m_columns(0) {}
+
+///////////////////////////////////////Matrix(int, size_t)/////////////////////////////////////////////////////////
+
+Matrix::Matrix(int constant, size_t dim):m_lines(dim), m_columns(dim)
 {
     Elem* elem = NULL;
 
@@ -18,13 +18,13 @@ lines(dim), columns(dim)
         elem->line = i;
         elem->column = i;
         elem->val = constant;
-        this->elemList.pushBack(elem);
+        this->m_elemList.pushBack(elem);
     }
 }
 
-Matrix::
-Matrix(const int** arrMatrix, size_t lines, size_t columns) :
-lines(lines), columns(columns)
+///////////////////////////////////////Matrix(const int**, size_t, size_t)/////////////////////////////////////////////////////////
+
+Matrix::Matrix(int** arrMatrix, size_t lines, size_t columns):m_lines(lines), m_columns(columns)
 {
     Elem* elem = NULL;
 
@@ -36,47 +36,58 @@ lines(lines), columns(columns)
                 elem->line = i;
                 elem->column = j;
                 elem->val = arrMatrix[i][j];
-                this->elemList.pushBack(elem);
+                this->m_elemList.pushBack(elem);
             }
 }
 
-void Matrix::
-print()
+///////////////////////////////////////print()/////////////////////////////////////////////////////////
+
+void Matrix::print()
 {
-    Elem* tmp = this->elemList[0];
-    size_t k = 0;
+    std::ofstream testFile("C:\\Users\\vitalii\\Documents\\projects\\matrix\\data\\test.txt", std::ios::app | std::ios::out);
 
-    for(size_t i = 0; i < lines; i++)
+    if(!m_elemList.isEmpty())
     {
-        for(size_t j = 0; j < columns; j++)
-            if(tmp && (i == tmp->line) && (j == tmp->column))
-            {
-                cout << tmp->val << " ";
-                k++;
-                tmp = this->elemList[k];
-            }else
-                cout << 0 << " ";
-
-        cout << endl;
+        testFile << "<empty>" << endl;
+        return;
     }
 
-    cout << endl;
+    Elem* tmp = this->m_elemList[0];
+    size_t k = 0;
+
+    for(size_t i = 0; i < this->m_lines; i++)
+    {
+        for(size_t j = 0; j < this->m_columns; j++)
+            if(tmp && (i == tmp->line) && (j == tmp->column))
+            {
+                testFile << tmp->val << " ";
+                k++;
+                tmp = this->m_elemList[k];
+            }else
+                testFile << 0 << " ";
+
+        testFile << endl;
+    }
+
+    testFile << endl;
 }
 
-void Matrix::
-operator *=(int digit)
+///////////////////////////////////////operator *=(int)/////////////////////////////////////////////////////////
+
+void Matrix::operator *=(int digit)
 {
-    for(size_t i = 0; i < this->elemList.getSize(); i++)
-        this->elemList[i]->val *= digit;
+    for(size_t i = 0; i < this->m_elemList.getSize(); i++)
+        this->m_elemList[i]->val *= digit;
 }
 
-void Matrix::
-operator +=(Matrix otherMatr)
+///////////////////////////////////////operator +=(Matrix&)/////////////////////////////////////////////////////////
+
+void Matrix::operator +=(Matrix& otherMatr)
 {
-    if((this->lines != otherMatr.lines) || (this->columns != otherMatr.columns))
+    if((this->m_lines != otherMatr.m_lines) || (this->m_columns != otherMatr.m_columns))
         return;
 
-    for(size_t i = 0; i < otherMatr.elemList.getSize(); i++)
-        if((this->elemList[i]->line == otherMatr.elemList[i]->line) && (this->elemList[i]->column == otherMatr.elemList[i]->column))
-            this->elemList[i]->val += otherMatr.elemList[i]->val;
+    for(size_t i = 0; i < otherMatr.m_elemList.getSize(); i++)
+        if((this->m_elemList[i]->line == otherMatr.m_elemList[i]->line) && (this->m_elemList[i]->column == otherMatr.m_elemList[i]->column))
+            this->m_elemList[i]->val += otherMatr.m_elemList[i]->val;
 }
