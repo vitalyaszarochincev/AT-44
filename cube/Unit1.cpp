@@ -1,237 +1,274 @@
+#pragma hdrstop
+
 #include <vcl.h>
 #include <math.h>
 #include "Unit1.h"
 
+#pragma package(smart_init)
 #pragma resource "*.dfm"
+
+#define TO_RADIANS(angle) (((angle) * (M_PI)) / (180.0))
 
 TForm1 *Form1;
 
-__fastcall TForm1::TForm1(TComponent* Owner)
-        : TForm(Owner)
+struct CUBE
 {
-}
-
-struct Cube
-{
-    double x;
-    double y;
+  	double x;
+  	double y;
 };
 
-const double ZOOM_OFFSET = 0.2;
-const double MIN_ZOOM = 0.4;
-const double MAX_ZOOM = 3.0;
-const int COORDINATE_OFFSET = 20;
-const int MAX_ANGLE = 357;
-const int ANGLE_OFFSET = 3;
-const int NUM_OF_POINTS = 8;
-const int NUM_OF_VERTEGES = 6;
-const int POINTS_IN_VERTEGE = 4;
-const int NUM_OF_COORDINATES = 3;
+const int PEAK_NUM = 8;
+const int PEAKS_IN_ADGE = 4;
+const int ADGES = 6;
+const int MAX_ANGLE = 360;
+const int ROT_SHIFT = 5;
+const double SKALE_SHIFT = 0.2;
+const double START_SCALE = 2.0;
+CUBE pix[PEAK_NUM];
+CUBE cube[ADGES][PEAKS_IN_ADGE];
 
-double zoom = 1;
-int angle_x, angle_y, angle_z = 0;
-int center_x = 300, center_y = 220;
+double startXCordinate = ROT_SHIFT;
+double startYCordinate = 2ROT_SHIFT;
+double startZCordinate = 0;
+double vergeLen = 80;
 
-const int point[NUM_OF_POINTS][NUM_OF_COORDINATES] = {{-30,-30,-30},
-                                                      { 30,-30,-30},
-                                                      { 30, 30,-30},
-                                                      {-30, 30,-30},
-                                                      {-30,-30, 30},
-                                                      { 30,-30, 30},
-                                                      { 30, 30, 30},
-                                                      {-30, 30, 30}};
-
-const int verges[NUM_OF_VERTEGES][POINTS_IN_VERTEGE] = {{0,4,5,1},
-                                                        {0,1,2,3},
-                                                        {0,3,7,4},
-                                                        {5,4,7,6},
-                                                        {1,5,6,2},
-                                                        {2,6,7,3}};
-
-double newpoint[NUM_OF_POINTS][NUM_OF_COORDINATES];
-Cube points[NUM_OF_POINTS];
-Cube cube[NUM_OF_VERTEGES][POINTS_IN_VERTEGE];
-
-bool visible_roberts(int i)
+const int NewPix[PEAK_NUM][3] =
 {
-    double s = 0;
+	{startXCordinate, startYCordinate, startZCordinate},
+	{startXCordinate + vergeLen, startYCordinate, startZCordinate},
+	{startXCordinate + vergeLen, startYCordinate + vergeLen, startZCordinate},
+	{startXCordinate, startYCordinate + vergeLen, startZCordinate},
+	{startXCordinate, startYCordinate, startZCordinate + vergeLen},
+	{startXCordinate + vergeLen, startYCordinate, startZCordinate + vergeLen},
+	{startXCordinate + vergeLen, startYCordinate+vergeLen, startZCordinate + vergeLen},
+	{startXCordinate, startYCordinate+vergeLen, startZCordinate+vergeLen}
+};
+const int verges[ADGES][PEAKS_IN_ADGE] =
+{
+	{0, 4, 5, 1},
+	{0, 1, 2, 3},
+	{0, 3, 7, 4},
+	{5, 4, 7, 6},
+	{1, 5, 6, 2},
+	{2, 6, 7, 3}
+};
 
-    for(int j = 0; j < 4; j++)
+int RotX = 0;
+int RotY = 0;
+int RotZ = 0;
+int ShiftY = 150;
+int ShiftX = 150;
+double newpix[PEAK_NUM][3];
+double Scale = 0;
+
+__fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner){}
+
+int ALG_Roberts(int i)
+{
+    double summ = 0;
+    int k;
+
+    for(int j = 0; j < PEAKS_IN_ADGE; j++)
     {
-        int k = (j == 3) ? 0 : j + 1;
-        s += (cube[i][j].x - cube[i][k].x) * (cube[i][j].y + cube[i][k].y);
+    	if(j == PEAKS_IN_ADGE - 1)
+    		k = 0;
+    	else
+    		k = j + 1;
+        
+        ssumm += (cube[i][j].x - cube[i][k].x) * (cube[i][j].y + cube[i][k].y);
     }
 
-    return ((s > 0) ? true : false);
+    if(summ > 0)
+    	summ = 1;
+    else
+    	summ = 0;
+
+    return summ;
 }
 
-void projection()
+void Perspect()
 {
-    for(int i = 0; i < NUM_OF_POINTS; i++)
-    {
-        points[i].x = newpoint[i][0] + newpoint[i][2] / 2;
-        points[i].y = newpoint[i][1] - newpoint[i][2] / 2;
-    }
+	for(int i = 0; i < PEAK_NUM; i++)
+	{
+		pix[i].x = newpix[i][0] + newpix[i][2] / 2;
+		pix[i].y = newpix[i][1] - newpix[i][2] / 2;
+	}
 
-    for(int i = 0; i < NUM_OF_VERTEGES; i++)
-    {
-        for(int j = 0; j < POINTS_IN_VERTEGE; j++)
-        {
-            cube[i][j] = points[verges[i][j]];
-        }
-    }
+	for(int i = 0; i < ADGES; i++)
+		for(int j = 0; j < PEAKS_IN_ADGE; j++)
+			cube[i][j] = pix[verges[i][j]];
 }
 
-double to_radians(double x)
+void Conversion()
 {
-    return (x * (M_PI / 180));
+	double x = 0;
+	double y = 0;
+	double z = 0;
+	double x1 = 0;
+	double y1 = 0;
+	double z1 = 0;
+
+	for (int i = 0; i < PEAK_NUM; i++)
+	{
+		x = NewPix[i][0];
+		y = NewPix[i][1];
+		z = NewPix[i][2];
+
+		x1 = x * cos(TO_RADIANS(RotZ)) + y * sin(TO_RADIANS(RotZ));
+		y1 = -x * sin(TO_RADIANS(RotZ)) + y * cos(TO_RADIANS(RotZ));
+		z1 = z;
+
+		x = x1;
+		y = y1 * cos(TO_RADIANS(RotX)) + z1 * sin(TO_RADIANS(RotX));
+		z = -y1 * sin(TO_RADIANS(RotX)) + z1 * cos(TO_RADIANS(RotX));
+
+		x1 = x * cos(TO_RADIANS(RotY)) - z * sin(TO_RADIANS(RotY));
+		y1 = y;
+		z1 = x * sin(TO_RADIANS(RotY)) + z * cos(TO_RADIANS(RotY));
+
+		newpix[i][0] = x1 * Scale + ShiftX;
+		newpix[i][1] = y1 * Scale + ShiftY;
+		newpix[i][2] = z1 * Scale;
+	}
 }
 
-void transparent()
+void DrawEdge (int fromX, int fromY, int toX, int toY)
 {
-    double sinx = sin(to_radians(angle_x)),
-           siny = sin(to_radians(angle_y)),
-           sinz = sin(to_radians(angle_z)),
-           cosx = cos(to_radians(angle_x)),
-           cosy = cos(to_radians(angle_y)),
-           cosz = cos(to_radians(angle_z));
-
-    double x,y,z,x1,y1,z1;
-
-    for (int i = 0; i < NUM_OF_POINTS; i++)
-    {
-        x = point[i][0];
-        y = point[i][1];
-        z = point[i][2];
-
-        x1 = x * cosz + y * sinz;
-        y1 = -x * sinz + y * cosz;
-        z1 = z;
-
-        x = x1;
-        y = y1 * cosx + z1 * sinx;
-        z = -y1 * sinx + z1 * cosx;
-
-        x1 = x * cosy - z * siny;
-        y1 = y;
-        z1 = x * siny + z * cosy;
-
-    	newpoint[i][0] = (x1 * zoom);
-	    newpoint[i][1] = (y1 * zoom);
-	    newpoint[i][2] = (z1 * zoom);
-
-	    newpoint[i][0] += center_x;
-	    newpoint[i][1] += center_y;
-    }
+	Form1->Canvas->MoveTo(cube[fromX][fromY].x, cube[fromX][fromY].y);
+	Form1->Canvas->LineTo(cube[toX][toY].x, cube[toX][toY].y);
 }
 
-void line(int i, int j, int i1, int j1)
+void DrawCube()
 {
-        Form1->PaintBox1->Canvas->MoveTo(cube[i][j].x, cube[i][j].y);
-        Form1->PaintBox1->Canvas->LineTo(cube[i1][j1].x, cube[i1][j1].y);
+	int k;
+	
+	for(int i = 0; i < ADGES; i++)
+		for(int j = 0; j < PEAKS_IN_ADGE j++)
+			if(ALG_Roberts(i))
+			{
+		    	if(j == PEAKS_IN_ADGE - 1)
+		    		k = 0;
+		    	else
+		    		k = j + 1;
+
+				DrawEdge(i, j, i, k);
+			}
 }
 
-void draw()
+void START ()
 {
-    for(int i = 0; i < NUM_OF_VERTEGES; i++)
-    {
-        for(int j = 0; j < POINTS_IN_VERTEGE; j++)
-        {
-            if(visible_roberts(i))
-            {
-                int k = (j == 3) ? 0 : j + 1;
-                line(i,j,i,k);
-            }
-        }
-    }
-}
-
-void repaint()
-{
-    Form1->PaintBox1->Repaint();
-
-    transparent();
-    projection();
-    draw();
+   Form1->Repaint();
+   Conversion();
+   Perspect();
+   DrawCube();
 }
 
 void __fastcall TForm1::Button1Click(TObject *Sender)
 {
-    repaint();
+	RotX = 0;
+	RotY = 0; 
+	RotZ = 0;
+	Scale = START_SCALE;
 
-    Form1->GroupBox3->Visible = true;
-    Form1->GroupBox4->Visible = true;
+	START();
+
+	Form1->GroupBox2->Visible = True;
+	Form1->GroupBox3->Visible = True;
 }
 
-void __fastcall TForm1::Button6Click(TObject *Sender)
+void __fastcall TForm1::S_MaxClick(TObject *Sender)
 {
-    if(zoom > MIN_ZOOM) zoom -= ZOOM_OFFSET;
-    repaint();
+	Scale += SKALE_SHIFT;
+	START();
 }
 
-void __fastcall TForm1::Button7Click(TObject *Sender)
+void __fastcall TForm1::S_MinClick(TObject *Sender)
 {
-    if(zoom < MAX_ZOOM) zoom += ZOOM_OFFSET;
-    repaint();
+  if (Scale > 1) 
+  	Scale -= SKALE_SHIFT;
+
+  START();
 }
 
-void __fastcall TForm1::Button9Click(TObject *Sender)
+void __fastcall TForm1::UpClick(TObject *Sender)
 {
-    if(angle_x < MAX_ANGLE)
-        angle_x += ANGLE_OFFSET;
-    else
-        angle_x = 0;
-
-    repaint();
+	double Step = StrToFloat(Form1->SZ->Text);
+	ShiftY -= Step;
+	START();
 }
 
-void __fastcall TForm1::Button8Click(TObject *Sender)
+void __fastcall TForm1::DownClick(TObject *Sender)
+{  
+	double Step = StrToFloat(Form1->SZ->Text);
+	ShiftY += Step;
+	START();
+}
+
+void __fastcall TForm1::RightClick(TObject *Sender)
+{ 
+	double Step = StrToFloat(Form1->SZ->Text);
+	ShiftX += Step;
+	START();
+}
+
+void __fastcall TForm1::LeftClick(TObject *Sender)
 {
-    if(angle_y < MAX_ANGLE)
-        angle_y += ANGLE_OFFSET;
-    else
-        angle_y = 0;
-
-    repaint();
+	double Step = StrToFloat(Form1->SZ->Text);
+	ShiftX -= Step;
+	START();
 }
 
-void __fastcall TForm1::Button10Click(TObject *Sender)
+void __fastcall TForm1::ExitClick(TObject *Sender)
 {
-    if(angle_z < MAX_ANGLE)
-        angle_z += ANGLE_OFFSET;
-    else
-        angle_z = 0;
-        
-    repaint();
+  	Close();
 }
 
-int new_center_y = 6;
-int new_center_x = 10;
-
-void __fastcall TForm1::UpDown1Click(TObject *Sender, TUDBtnType Button)
+void __fastcall TForm1::Rotation_XMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
-    int center_pos = Form1->UpDown1->Position;
+   if(RotX < MAX_ANGLE - ROT_SHIFT)
+   {
+     if (Button == mbLeft) 
+     	RotX += ROT_SHIFT;
 
-    if(new_center_y > center_pos)
-        center_y += COORDINATE_OFFSET;
-    else
-        center_y -= COORDINATE_OFFSET;
+     if (Button == mbRight) 
+     	RotX -= ROT_SHIFT;
+   }else 
+   		RotX = 0;
 
-    repaint();
-    new_center_y = center_pos;
+   START();
 }
 
-void __fastcall TForm1::UpDown2Click(TObject *Sender, TUDBtnType Button)
+void __fastcall TForm1::Rotation_YMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
-    int center_pos = Form1->UpDown2->Position;
+   if(RotX < MAX_ANGLE - ROT_SHIFT)
+   {
+     	if (Button == mbLeft) 
+     		RotY += ROT_SHIFT;
 
-    if(new_center_x > center_pos)
-        center_x -= COORDINATE_OFFSET;
-    else
-        center_x += COORDINATE_OFFSET;
+     	if (Button == mbRight) 
+     		RotY -=ROT_SHIFT;
+   }else 
+   		RotX = 0;
 
-    repaint();
-    new_center_x = center_pos;
+   START();
 }
 
+void __fastcall TForm1::Rotation_ZMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+   if(RotX < MAX_ANGLE - ROT_SHIFT)
+   {
+    	if (Button == mbLeft) 
+     		RotZ += ROT_SHIFT;
 
+    	 if (Button == mbRight) 
+     		RotZ -= ROT_SHIFT;
+   }else 
+   		 RotX = 0;
+
+   START();
+}
+
+void __fastcall TForm1::GroupBox3MouseMove(TObject *Sender, TShiftState Shift, int X, int Y)
+{
+  	ShowHint = True;
+}
